@@ -45,8 +45,11 @@
                         window.clearInterval(winTimer);
                         var popupUrl = window.localStorage.getItem("code");
                         var code = getUrlParameter(popupUrl, 'code');
+                       
+                        //Access code
                         var datas = 'grant_type=authorization_code&client_id=cb9db5fb-6864-46f3-8bac-c030803fa4f7%40675871be-bb22-4c9d-86f0-954f9cbef0fa&client_secret=gw8Nzr4YhRG4NguuemLn7cf3WwBrFdDj%2FFgd%2BP%2BHn3Q=&code='+code+'&redirect_uri=https://localhost:8443/appread/home/success.html&resource=00000003-0000-0ff1-ce00-000000000000%2Fmysps365.sharepoint.com%40675871be-bb22-4c9d-86f0-954f9cbef0fa';
-                        
+
+                       
                         /*var iframe = document.createElement("iframe");
   var uniqueString = datas;
   document.body.appendChild(iframe);
@@ -81,7 +84,7 @@
                 contentType: "application/x-www-form-urlencoded",
                 success: function (data) {
                     window.localStorage.setItem("access_token", data.access_token);
-                    
+                    window.localStorage.setItem("refresh_token", data.refresh_token);
                 },
                 error: function (data) {
                     //alert(data);
@@ -109,6 +112,32 @@
                 //});
                 //https://localhost:8443/appread/home/home.html?code=AQABAAAAAADRNYRQ3dhRSrm-4K-adpCJ8hu7gducw83bqJUOPD4nMXe9GBgU7ssX7VMgilsaCVRKU1QhzmnPPfQKuIvSs0jmG54tBRKjhUKkK3jU-XnizbidxJE4CkLDTNLBqESjkVOFvmWrzv8t7MJWd8tn0R7bNZLOOxxgS_8VRoQX5hrml-DNKZJyU4M541XYjkQf3FGtP4F-LeELwvKt-27pwxXlrlanGdyXnqtKazqAwa1QChFDaULS9CG2UU5EsY_24UBT9uxGru2fQxU9Kw3wS8_U_7rzSvNIwSCS4w8svnmdfHLhL78EoMN4t0QwkzXuItTumq317dXr5btrtdQOugiXB1oqjMYNb-5pQHChx3uJbdZMumQ62MLxYwDv4aHKVvPZFsMooRZJodytbOtEVbObpHUEu2j3lmUCdfyNvdTNnIoZRD3BgKsuNbGkVWd9aFJEt6vd0E6JTHNQKHNT-l8rGVF0wSskCtHgjt4WkU4serC3dcPFypmPXuHzpQv9mGCaNmoCoWauwqPdzProwTJZ5_JZkgJRSD6WbJ4Ob2nO-0t0dD1vnTRV0Yo_CjvNQCF2g7P1R5f1jswrn2ZDko7yjQmwKOn7y3yRTophlvvAmhahodll0h_ihM2FugiYbUZiMiSbyexLk7Z1hacFGghkv_G41zgOFZJ6TMVA50UN_HtsJe8hKoU8k7KoDp1u5ksHq8zkKD427afAD0nnZYoQIAA&session_state=6c098cb8-a026-41bd-80db-0c885c8693ed    
    // })
+jQuery("#refreshToken").click(function()
+      {
+                        var code = window.localStorage.getItem("refresh_token");
+                        //Refresh code
+                        var datas = 'grant_type=refresh_token&client_id=cb9db5fb-6864-46f3-8bac-c030803fa4f7%40675871be-bb22-4c9d-86f0-954f9cbef0fa&client_secret=gw8Nzr4YhRG4NguuemLn7cf3WwBrFdDj%2FFgd%2BP%2BHn3Q=&refresh_token='+code+'&redirect_uri=https://localhost:8443/appread/home/success.html&resource=00000003-0000-0ff1-ce00-000000000000%2Fmysps365.sharepoint.com%40675871be-bb22-4c9d-86f0-954f9cbef0fa';
+      
+    var proxy = 'https://cors-anywhere.herokuapp.com/';
+
+                jQuery.ajax({
+                url: proxy + "https://accounts.accesscontrol.windows.net/675871be-bb22-4c9d-86f0-954f9cbef0fa/tokens/OAuth/2",
+                type: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded"},
+                data: datas,
+                crossDomain: true,
+                contentType: "application/x-www-form-urlencoded",
+                success: function (data) {
+                    window.localStorage.setItem("access_token", data.access_token);
+                    
+                },
+                error: function (data) {
+                    //alert(data);
+                }
+            });
+                  
+  });
+
       jQuery("#test").click(function()
       {
         var accessToken = window.localStorage.getItem('access_token');
