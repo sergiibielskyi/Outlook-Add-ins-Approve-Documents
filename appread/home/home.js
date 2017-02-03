@@ -34,6 +34,8 @@
                 //var url = "https://mysps365.sharepoint.com/_layouts/oauthauthorize.aspx?client_id=36fa0000-3a88-4ca5-82cd-aa7903aef2e1&scope=Web.Read&response_type=code&redirect_uri=https://localhost:8443/appread/home/home.html";
                 
                 var win = window.open("https://localhost:8443/appread/home/popup.html", "", "width=720, height=300, scrollbars=0, toolbar=0, menubar=0, resizable=0, status=0, titlebar=0");
+                jQuery("#loginDiv").css("display", "none");
+                jQuery("#loading").css("display", "block");
                 if (window.focus) {
                   win.focus()}
                 var winTimer = window.setInterval(function()
@@ -85,6 +87,8 @@
                 success: function (data) {
                     window.localStorage.setItem("access_token", data.access_token);
                     window.localStorage.setItem("refresh_token", data.refresh_token);
+                    jQuery("#loading").css("display", "none");
+                    jQuery("#mainForm").css("display", "block");
                 },
                 error: function (data) {
                     //alert(data);

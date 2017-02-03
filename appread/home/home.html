@@ -28,9 +28,18 @@
 </head>
 
 <body>
-  <div id="refreshModal"</div>
   <div id="content-main">
-    <div class="padding">
+    <div id="loginDiv">
+      <img src="https://localhost:8443/content/office365.png" width="320px" height="130px" />
+      <div id="enter" align="center" class="padding">
+        Необходимо произвести вход в систему Office 365.
+        <button id="btnAddSite">Вход</button>
+      </div>
+   </div>
+   <div style="display:none" id="loading" align="center">
+         <img src="https://localhost:8443/content/loading.gif" />
+      </div>
+    <div style="display:none" id="mainForm" class="padding">
       <p><strong>Утверждение документа</strong></p>
       <p>Просьба утвердить документ, который пришел к Вам на согласование</p>
       <table id="details">
@@ -47,8 +56,8 @@
           <td id="from"></td>
         </tr>
       </table>
-      <button id="btnAddSite">Утвердить</button>
-      <button id="test">Отклонить</button>
+      
+      <button id="test">Выход</button>
       <button id="refreshToken">Refresh</button>
     </div>
     
