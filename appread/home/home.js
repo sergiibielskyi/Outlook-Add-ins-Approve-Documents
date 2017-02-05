@@ -5,6 +5,9 @@
   Office.initialize = function(reason){
     jQuery(document).ready(function(){
       app.initialize();
+      jQuery("#loginDiv").css("display", "none");
+      jQuery("#loading").css("display", "block");
+      GetAccessToken();
       //jQuery.get('https://login.microsoftonline.com/common/oauth2/authorize?client_id=0b33a287-62dd-407e-bbb2-b9fc497ec39d&scope=openid+profile&response_type=id_token&redirect_uri=https://mysps365.sharepoint.com&nonce=2234345623456456',
       //{'crossDomain': true,
       //'dataType': 'jsonp'},
@@ -91,7 +94,7 @@
                     jQuery("#mainForm").css("display", "block");
                 },
                 error: function (data) {
-                    //alert(data);
+                    
                 }
             });
                     }
@@ -116,7 +119,7 @@
                 //});
                 //https://localhost:8443/appread/home/home.html?code=AQABAAAAAADRNYRQ3dhRSrm-4K-adpCJ8hu7gducw83bqJUOPD4nMXe9GBgU7ssX7VMgilsaCVRKU1QhzmnPPfQKuIvSs0jmG54tBRKjhUKkK3jU-XnizbidxJE4CkLDTNLBqESjkVOFvmWrzv8t7MJWd8tn0R7bNZLOOxxgS_8VRoQX5hrml-DNKZJyU4M541XYjkQf3FGtP4F-LeELwvKt-27pwxXlrlanGdyXnqtKazqAwa1QChFDaULS9CG2UU5EsY_24UBT9uxGru2fQxU9Kw3wS8_U_7rzSvNIwSCS4w8svnmdfHLhL78EoMN4t0QwkzXuItTumq317dXr5btrtdQOugiXB1oqjMYNb-5pQHChx3uJbdZMumQ62MLxYwDv4aHKVvPZFsMooRZJodytbOtEVbObpHUEu2j3lmUCdfyNvdTNnIoZRD3BgKsuNbGkVWd9aFJEt6vd0E6JTHNQKHNT-l8rGVF0wSskCtHgjt4WkU4serC3dcPFypmPXuHzpQv9mGCaNmoCoWauwqPdzProwTJZ5_JZkgJRSD6WbJ4Ob2nO-0t0dD1vnTRV0Yo_CjvNQCF2g7P1R5f1jswrn2ZDko7yjQmwKOn7y3yRTophlvvAmhahodll0h_ihM2FugiYbUZiMiSbyexLk7Z1hacFGghkv_G41zgOFZJ6TMVA50UN_HtsJe8hKoU8k7KoDp1u5ksHq8zkKD427afAD0nnZYoQIAA&session_state=6c098cb8-a026-41bd-80db-0c885c8693ed    
    // })
-jQuery("#refreshToken").click(function()
+function GetAccessToken()
       {
                         var code = window.localStorage.getItem("refresh_token");
                         //Refresh code
@@ -133,14 +136,17 @@ jQuery("#refreshToken").click(function()
                 contentType: "application/x-www-form-urlencoded",
                 success: function (data) {
                     window.localStorage.setItem("access_token", data.access_token);
-                    
+                    //window.localStorage.setItem("refresh_token", data.refresh_token);
+                    jQuery("#loading").css("display", "none");
+                    jQuery("#mainForm").css("display", "block");
                 },
                 error: function (data) {
-                    //alert(data);
+                    jQuery("#loginDiv").css("display", "block");
+                    jQuery("#loading").css("display", "none");
                 }
             });
                   
-  });
+  }
 
       jQuery("#test").click(function()
       {
