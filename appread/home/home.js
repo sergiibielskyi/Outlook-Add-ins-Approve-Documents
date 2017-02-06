@@ -149,11 +149,7 @@ var getUrlParameter = function getUrlParameter(url, name) {
 function getItemTypeForListName(name) {
     return"SP.Data." + name.charAt(0).toUpperCase() + name.slice(1) + "ListItem";
 }
-function GetRequestDigest()
-{
-  var accessToken = window.localStorage.getItem('access_token');
-          
-}
+
 function getDocumentById(itemId)
 {
           var accessToken = window.localStorage.getItem('access_token');
