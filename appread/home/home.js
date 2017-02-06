@@ -120,12 +120,12 @@
                 //https://localhost:8443/appread/home/home.html?code=AQABAAAAAADRNYRQ3dhRSrm-4K-adpCJ8hu7gducw83bqJUOPD4nMXe9GBgU7ssX7VMgilsaCVRKU1QhzmnPPfQKuIvSs0jmG54tBRKjhUKkK3jU-XnizbidxJE4CkLDTNLBqESjkVOFvmWrzv8t7MJWd8tn0R7bNZLOOxxgS_8VRoQX5hrml-DNKZJyU4M541XYjkQf3FGtP4F-LeELwvKt-27pwxXlrlanGdyXnqtKazqAwa1QChFDaULS9CG2UU5EsY_24UBT9uxGru2fQxU9Kw3wS8_U_7rzSvNIwSCS4w8svnmdfHLhL78EoMN4t0QwkzXuItTumq317dXr5btrtdQOugiXB1oqjMYNb-5pQHChx3uJbdZMumQ62MLxYwDv4aHKVvPZFsMooRZJodytbOtEVbObpHUEu2j3lmUCdfyNvdTNnIoZRD3BgKsuNbGkVWd9aFJEt6vd0E6JTHNQKHNT-l8rGVF0wSskCtHgjt4WkU4serC3dcPFypmPXuHzpQv9mGCaNmoCoWauwqPdzProwTJZ5_JZkgJRSD6WbJ4Ob2nO-0t0dD1vnTRV0Yo_CjvNQCF2g7P1R5f1jswrn2ZDko7yjQmwKOn7y3yRTophlvvAmhahodll0h_ihM2FugiYbUZiMiSbyexLk7Z1hacFGghkv_G41zgOFZJ6TMVA50UN_HtsJe8hKoU8k7KoDp1u5ksHq8zkKD427afAD0nnZYoQIAA&session_state=6c098cb8-a026-41bd-80db-0c885c8693ed    
    // })
 function GetAccessToken()
-      {
-                        var code = window.localStorage.getItem("refresh_token");
-                        //Refresh code
-                        var datas = 'grant_type=refresh_token&client_id=cb9db5fb-6864-46f3-8bac-c030803fa4f7%40675871be-bb22-4c9d-86f0-954f9cbef0fa&client_secret=gw8Nzr4YhRG4NguuemLn7cf3WwBrFdDj%2FFgd%2BP%2BHn3Q=&refresh_token='+code+'&redirect_uri=https://localhost:8443/appread/home/success.html&resource=00000003-0000-0ff1-ce00-000000000000%2Fmysps365.sharepoint.com%40675871be-bb22-4c9d-86f0-954f9cbef0fa';
+{
+      var code = window.localStorage.getItem("refresh_token");
+      //Refresh code
+      var datas = 'grant_type=refresh_token&client_id=cb9db5fb-6864-46f3-8bac-c030803fa4f7%40675871be-bb22-4c9d-86f0-954f9cbef0fa&client_secret=gw8Nzr4YhRG4NguuemLn7cf3WwBrFdDj%2FFgd%2BP%2BHn3Q=&refresh_token='+code+'&redirect_uri=https://localhost:8443/appread/home/success.html&resource=00000003-0000-0ff1-ce00-000000000000%2Fmysps365.sharepoint.com%40675871be-bb22-4c9d-86f0-954f9cbef0fa';
       
-    var proxy = 'https://cors-anywhere.herokuapp.com/';
+      var proxy = 'https://cors-anywhere.herokuapp.com/';
 
                 jQuery.ajax({
                 url: proxy + "https://accounts.accesscontrol.windows.net/675871be-bb22-4c9d-86f0-954f9cbef0fa/tokens/OAuth/2",
@@ -139,31 +139,71 @@ function GetAccessToken()
                     //window.localStorage.setItem("refresh_token", data.refresh_token);
                     jQuery("#loading").css("display", "none");
                     jQuery("#mainForm").css("display", "block");
+                    var item = Office.cast.item.toItemRead(Office.context.mailbox.item);
+                    var itemId = item.subject.split('-');
+                    getDocumentById(itemId[1]);
                 },
                 error: function (data) {
                     jQuery("#loginDiv").css("display", "block");
                     jQuery("#loading").css("display", "none");
                 }
             });
-                  
-  }
+}
 
-      jQuery("#test").click(function()
+      jQuery("#approve").click(function()
       {
+        var item = Office.cast.item.toItemRead(Office.context.mailbox.item);
+        var itemId = item.subject.split('-');
         var accessToken = window.localStorage.getItem('access_token');
-          jQuery.ajax({
-                url: "https://mysps365.sharepoint.com/_api/web/lists/getbytitle('ManagersList')/items",
-                type: "GET",
+        jQuery("#loading").css("display", "block");
+        jQuery("#mainForm").css("display", "none");
+        jQuery.ajax({
+                url: "https://mysps365.sharepoint.com/_api/contextinfo",
+                type: "POST",
                 headers: { "Accept": "application/json;odata=verbose", 
               "Authorization": "Bearer " + accessToken,
               "Access-Control-Allow-Origin": "*"},
                 success: function (data) {
-                    //alert('Successfully obtained data.');
+                  var digital = data.d.GetContextWebInformation.FormDigestValue;
+                  var itemProperties = {'DocStatus':'Approved'};
+                  var itemPayload = {
+                    '__metadata': {'type': getItemTypeForListName('DocumentsForApprove')}
+                  };
+                  for(var prop in itemProperties){
+                        itemPayload[prop] = itemProperties[prop];
+                  }
+                  var body = JSON.stringify({ '__metadata': { 'type': 'SP.Data.DocumentsForApproveListItem' }, 'DocStatus': 'Approved'});
+                  jQuery.ajax({
+                        url: "https://mysps365.sharepoint.com/_api/web/lists/getbytitle('DocumentsForApprove')/items("+itemId[1]+")",
+                        type: "POST",
+                        data: JSON.stringify(itemPayload),
+                        contentType: "application/json;odata=verbose",
+                        headers: { "Accept": "application/json;odata=verbose", 
+                        "X-RequestDigest": digital,
+                        "X-HTTP-Method": "MERGE",
+                        "IF-MATCH": "*",
+                      "Authorization": "Bearer " + accessToken
+                      
+                      },
+                        success: function (data) {
+                            jQuery("#loading").css("display", "none");
+                            jQuery("#mainForm").css("display", "none");
+                            jQuery("#success").css("display", "block");
+                        },
+                        error: function (data) {
+                            jQuery("#loading").css("display", "none");
+                            jQuery("#mainForm").css("display", "block");
+                            jQuery("#success").css("display", "none");
+                        }
+                    });
+                   
                 },
                 error: function (data) {
-                    //alert(data);
+                    //return null;
                 }
             });
+
+        
       });
       
     });
@@ -173,6 +213,44 @@ var getUrlParameter = function getUrlParameter(url, name) {
     var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(url);
 	  return results[1] || 0;
 };
+function getItemTypeForListName(name) {
+    return"SP.Data." + name.charAt(0).toUpperCase() + name.slice(1) + "ListItem";
+}
+function GetRequestDigest()
+{
+  var accessToken = window.localStorage.getItem('access_token');
+          
+}
+function getDocumentById(itemId)
+{
+          var accessToken = window.localStorage.getItem('access_token');
+          jQuery.ajax({
+                url: "https://mysps365.sharepoint.com/_api/web/lists/getbytitle('DocumentsForApprove')/items("+itemId+")",
+                type: "GET",
+                headers: { "Accept": "application/json;odata=verbose", 
+              "Authorization": "Bearer " + accessToken,
+              "Access-Control-Allow-Origin": "*"},
+                success: function (data) {
+                    document.getElementById("Title").innerHTML = data.d.Title;
+                    document.getElementById("DocNotes").innerHTML = data.d.DocNotes;
+                    var monthNames = [
+                        "January", "February", "March",
+                        "April", "May", "June", "July",
+                        "August", "September", "October",
+                        "November", "December"
+                      ];      
+                    var date = new Date(data.d.Created);
+                    var day = date.getDate();
+                    var monthIndex = date.getMonth();
+                    var year = date.getFullYear();
+                    document.getElementById("Created").innerHTML = day + " " + monthNames[monthIndex] + " " + year;
+                },
+                error: function (data) {
+                    jQuery("#loginDiv").css("display", "block");
+                    jQuery("#loading").css("display", "none");
+                }
+            });
+}
 function getwebsite()
 {
     var clientContext = new SP.ClientContext('https://mysps365.sharepoint.com');
@@ -196,8 +274,8 @@ function onQueryFailed(sender, args) {
   function displayItemDetails(){
     var item = Office.cast.item.toItemRead(Office.context.mailbox.item);
     jQuery('#subject').text(item.subject);
-    getwebsite();
-    jQuery('#website').text(site);
+    //getwebsite();
+    //jQuery('#website').text(site);
 
     var from;
     if (item.itemType === Office.MailboxEnums.ItemType.Message) {

@@ -44,23 +44,26 @@
       <p>Просьба утвердить документ, который пришел к Вам на согласование</p>
       <table id="details">
         <tr>
-          <th>Номер документа: №345-23/12</th>
-          <td id="website"></td>
+          <th>Документ: </th>
+          <td id="Title"></td>
         </tr>
         <tr>
-          <th>Описание: Финансовый анализ работы компании за прошлый год</th>
-          <td id="subject"></td>
+          <th>Описание: </th>
+          <td id="DocNotes"></td>
         </tr>
         <tr>
-          <th>Автор документа: Бельский Сергей</th>
-          <td id="from"></td>
+          <th>Дата создания: </th>
+          <td id="Created"></td>
         </tr>
       </table>
-      
-      <button id="test">Выход</button>
-      <button id="refreshToken">Refresh</button>
+      <div align="right">
+      <button id="approve">Утвердить</button>
+      <button id="cancel">Отклонить</button>
+      </div>
     </div>
-    
+    <div style="display:none" id="success" class="padding">
+      <p><strong>Документ успешно утвержден</strong></p>
+    </div>
     <!--<iframe width="800" height="600" src="https://app.powerbi.com/view?r=eyJrIjoiYjM1NGIzYjktOGZkZi00ODZmLWFkMDQtOWIwYjA4ZjNhZTkyIiwidCI6IjMzMWIzMjdlLTgzMDgtNDc0Ni05OTMzLWZjZDBlYWMzOGZmMCIsImMiOjl9" frameborder="0" allowFullScreen="true"></iframe>-->
   </div>
 
