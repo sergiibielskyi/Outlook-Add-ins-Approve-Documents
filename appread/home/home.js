@@ -7,9 +7,35 @@
       app.initialize();
       jQuery("#loginDiv").css("display", "none");
       jQuery("#loading").css("display", "block");
-      GetAccessToken();
+
+      //Get configuration data
+      var client_id;
+      var client_secret;
+      var redirect_uri;
+      var resource;
+      var proxy;
+      var realm;
+      var site_url;
+      var list_title;
+
+
+      jQuery.getJSON( "./config.json", function( data ) {
+         client_id = data.client_id;
+         client_secret = data.client_secret;
+         redirect_uri = data.redirect_uri;
+         resource = data.resource;
+         proxy = data.proxy;
+         realm = data.realm;
+         site_url = data.site_url;
+         list_title = data.list_title;
+ 
+         GetAccessToken();
+      });
+            
+      
       
     jQuery("#btnAddSite").click(function (){
+
                 var win = window.open("https://localhost:8443/appread/home/popup.html", "", "width=720, height=300, scrollbars=0, toolbar=0, menubar=0, resizable=0, status=0, titlebar=0");
                 jQuery("#loginDiv").css("display", "none");
                 jQuery("#loading").css("display", "block");
@@ -26,12 +52,10 @@
                         var code = getUrlParameter(popupUrl, 'code');
                        
                         //Access code
-                        var datas = 'grant_type=authorization_code&client_id=cb9db5fb-6864-46f3-8bac-c030803fa4f7%40675871be-bb22-4c9d-86f0-954f9cbef0fa&client_secret=gw8Nzr4YhRG4NguuemLn7cf3WwBrFdDj%2FFgd%2BP%2BHn3Q=&code='+code+'&redirect_uri=https://localhost:8443/appread/home/success.html&resource=00000003-0000-0ff1-ce00-000000000000%2Fmysps365.sharepoint.com%40675871be-bb22-4c9d-86f0-954f9cbef0fa';
-    
-                        var proxy = 'https://cors-anywhere.herokuapp.com/';
-
+                        var datas = 'grant_type=authorization_code&client_id='+client_id+'&client_secret='+client_secret+'&code='+code+'&redirect_uri='+redirect_uri+'&resource='+resource;
+                        
                         jQuery.ajax({
-                        url: proxy + "https://accounts.accesscontrol.windows.net/675871be-bb22-4c9d-86f0-954f9cbef0fa/tokens/OAuth/2",
+                        url: proxy + "https://accounts.accesscontrol.windows.net/"+realm+"/tokens/OAuth/2",
                         type: "POST",
                         headers: { "Content-Type": "application/x-www-form-urlencoded"},
                         data: datas,
@@ -56,12 +80,10 @@ function GetAccessToken()
 {
       var code = window.localStorage.getItem("refresh_token");
       //Refresh code
-      var datas = 'grant_type=refresh_token&client_id=cb9db5fb-6864-46f3-8bac-c030803fa4f7%40675871be-bb22-4c9d-86f0-954f9cbef0fa&client_secret=gw8Nzr4YhRG4NguuemLn7cf3WwBrFdDj%2FFgd%2BP%2BHn3Q=&refresh_token='+code+'&redirect_uri=https://localhost:8443/appread/home/success.html&resource=00000003-0000-0ff1-ce00-000000000000%2Fmysps365.sharepoint.com%40675871be-bb22-4c9d-86f0-954f9cbef0fa';
+      var datas = 'grant_type=refresh_token&client_id='+client_id+'&client_secret='+client_secret+'&refresh_token='+code+'&redirect_uri='+redirect_uri+'&resource='+resource;
       
-      var proxy = 'https://cors-anywhere.herokuapp.com/';
-
                 jQuery.ajax({
-                url: proxy + "https://accounts.accesscontrol.windows.net/675871be-bb22-4c9d-86f0-954f9cbef0fa/tokens/OAuth/2",
+                url: proxy + "https://accounts.accesscontrol.windows.net/"+realm+"/tokens/OAuth/2",
                 type: "POST",
                 headers: { "Content-Type": "application/x-www-form-urlencoded"},
                 data: datas,
@@ -91,7 +113,7 @@ function GetAccessToken()
         jQuery("#loading").css("display", "block");
         jQuery("#mainForm").css("display", "none");
         jQuery.ajax({
-                url: "https://mysps365.sharepoint.com/_api/contextinfo",
+                url: site_url + "/_api/contextinfo",
                 type: "POST",
                 headers: { "Accept": "application/json;odata=verbose", 
               "Authorization": "Bearer " + accessToken,
@@ -100,14 +122,14 @@ function GetAccessToken()
                   var digital = data.d.GetContextWebInformation.FormDigestValue;
                   var itemProperties = {'DocStatus':'Approved'};
                   var itemPayload = {
-                    '__metadata': {'type': getItemTypeForListName('DocumentsForApprove')}
+                    '__metadata': {'type': getItemTypeForListName(list_title)}
                   };
                   for(var prop in itemProperties){
                         itemPayload[prop] = itemProperties[prop];
                   }
                   var body = JSON.stringify({ '__metadata': { 'type': 'SP.Data.DocumentsForApproveListItem' }, 'DocStatus': 'Approved'});
                   jQuery.ajax({
-                        url: "https://mysps365.sharepoint.com/_api/web/lists/getbytitle('DocumentsForApprove')/items("+itemId[1]+")",
+                        url: site_url + "/_api/web/lists/getbytitle('"+list_title+"')/items("+itemId[1]+")",
                         type: "POST",
                         data: JSON.stringify(itemPayload),
                         contentType: "application/json;odata=verbose",
@@ -138,10 +160,7 @@ function GetAccessToken()
 
         
       });
-      
-    });
-  };
-var site;
+      var site;
 var getUrlParameter = function getUrlParameter(url, name) {
     var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(url);
 	  return results[1] || 0;
@@ -154,7 +173,7 @@ function getDocumentById(itemId)
 {
           var accessToken = window.localStorage.getItem('access_token');
           jQuery.ajax({
-                url: "https://mysps365.sharepoint.com/_api/web/lists/getbytitle('DocumentsForApprove')/items("+itemId+")",
+                url: site_url+ "/_api/web/lists/getbytitle('"+list_title+"')/items("+itemId+")",
                 type: "GET",
                 headers: { "Accept": "application/json;odata=verbose", 
               "Authorization": "Bearer " + accessToken,
@@ -180,6 +199,9 @@ function getDocumentById(itemId)
                 }
             });
 }
+    });
+  };
+
 
   // Displays the "Subject" and "From" fields, based on the current mail item
   function displayItemDetails(){

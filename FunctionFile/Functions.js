@@ -18,24 +18,7 @@ function showMessage(message, icon, event) {
 
 
 function setSubject(event){
-  Office.context.mailbox.item.body.setAsync(
-         "<div><iframe width=\"300\" height=\"200\" src=\"https://app.powerbi.com/view?r=eyJrIjoiYjM1NGIzYjktOGZkZi00ODZmLWFkMDQtOWIwYjA4ZjNhZTkyIiwidCI6IjMzMWIzMjdlLTgzMDgtNDc0Ni05OTMzLWZjZDBlYWMzOGZmMCIsImMiOjl9\" frameborder=\"0\" allowFullScreen=\"true\"></iframe></div>",
-        { coercionType:"html", asyncContext:"This is passed to the callback" },
-          function callback(result) {
-             if (result.status === Office.AsyncResultStatus.Failed) {
-               Office.context.mailbox.item.notificationMessages.addAsync('setSubjectError', {
-                  type: 'errorMessage',
-                  message: 'Failed to set subject: ' + result.error
-                });
-                
-                event.completed();
-              }
-              else {
-                showMessage('Subject set', 'icon-16', event);
-              }
-             
-        });
-  /*Office.context.mailbox.item.subject.setAsync('Hello world!', function(result) {
+  Office.context.mailbox.item.subject.setAsync('Hello world!', function(result) {
     if (result.status === Office.AsyncResultStatus.Failed) {
       Office.context.mailbox.item.notificationMessages.addAsync('setSubjectError', {
         type: 'errorMessage',
@@ -47,7 +30,7 @@ function setSubject(event){
     else {
       showMessage('Subject set', 'icon-16', event);
     }
-  });*/
+  });
 
 }
 

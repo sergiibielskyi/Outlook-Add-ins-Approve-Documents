@@ -1,0 +1,11 @@
+{
+    "client_id": "cb9db5fb-6864-46f3-8bac-c030803fa4f7%40675871be-bb22-4c9d-86f0-954f9cbef0fa",
+    "client_secret": "gw8Nzr4YhRG4NguuemLn7cf3WwBrFdDj%2FFgd%2BP%2BHn3Q=",
+    "redirect_uri": "https://localhost:8443/appread/home/success.html",
+    "resource": "00000003-0000-0ff1-ce00-000000000000%2Fmysps365.sharepoint.com%40675871be-bb22-4c9d-86f0-954f9cbef0fa",
+    "proxy": "https://cors-anywhere.herokuapp.com/",
+    "realm": "675871be-bb22-4c9d-86f0-954f9cbef0fa",
+    "site_url": "https://mysps365.sharepoint.com",
+    "list_title": "DocumentsForApprove",
+    "client_id_short": "cb9db5fb-6864-46f3-8bac-c030803fa4f7"
+}
